@@ -30,13 +30,15 @@ export const ScaleSelector: React.FC = () => {
             }}
             className="min-w-[260px] sm:min-w-[320px] px-3 py-2 border border-gpline bg-bg text-ink rounded-none focus:outline-none focus-visible:ring-2 focus-visible:ring-gpgold text-sm"
           >
-            <optgroup label="Official University & Standard Presets">
-              {PRESET_GRADING_SCALES.map((scale) => (
-                <option key={scale.id} value={scale.id}>
-                  {scale.name}
-                </option>
-              ))}
-            </optgroup>
+            {Array.from(new Set(PRESET_GRADING_SCALES.map((s) => s.region || 'Standard'))).map((region) => (
+              <optgroup key={region} label={`${region} Systems`}>
+                {PRESET_GRADING_SCALES.filter((s) => (s.region || 'Standard') === region).map((scale) => (
+                  <option key={scale.id} value={scale.id}>
+                    {scale.name}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
 
             {state.customScales.length > 0 && (
               <optgroup label="Your Custom Scales">

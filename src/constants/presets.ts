@@ -1,4 +1,4 @@
-import { GradingScale } from '../types/grade';
+import type { GradingScale } from '../types/grade.ts';
 
 export const PRESET_GRADING_SCALES: GradingScale[] = [
   {
@@ -6,6 +6,7 @@ export const PRESET_GRADING_SCALES: GradingScale[] = [
     name: 'VTU (10-point) — CBCS',
     maxScale: 10,
     isCustom: false,
+    region: 'India',
     description: 'Visvesvaraya Technological University (S: 10, A: 9, B: 8, C: 7, D: 6, E: 5, F: 0)',
     grades: [
       { label: 'S', point: 10 },
@@ -22,6 +23,7 @@ export const PRESET_GRADING_SCALES: GradingScale[] = [
     name: 'Anna University (10-point)',
     maxScale: 10,
     isCustom: false,
+    region: 'India',
     description: 'Anna University Affiliated Colleges (O: 10, A+: 9, A: 8, B+: 7, B: 6, C: 5, U: 0)',
     grades: [
       { label: 'O', point: 10 },
@@ -38,6 +40,7 @@ export const PRESET_GRADING_SCALES: GradingScale[] = [
     name: 'Generic 10-point Scale',
     maxScale: 10,
     isCustom: false,
+    region: 'India',
     description: 'Standard UGC/AICTE 10-point scale (O, A+, A, B+, B, C, P, F)',
     grades: [
       { label: 'O', point: 10 },
@@ -55,6 +58,7 @@ export const PRESET_GRADING_SCALES: GradingScale[] = [
     name: 'Mumbai University (10-point)',
     maxScale: 10,
     isCustom: false,
+    region: 'India',
     description: 'University of Mumbai CBCS Grading Scheme',
     grades: [
       { label: 'O', point: 10 },
@@ -72,6 +76,7 @@ export const PRESET_GRADING_SCALES: GradingScale[] = [
     name: 'KTU (Kerala Tech University)',
     maxScale: 10,
     isCustom: false,
+    region: 'India',
     description: 'APJ Abdul Kalam Technological University Scheme',
     grades: [
       { label: 'S', point: 10 },
@@ -89,6 +94,7 @@ export const PRESET_GRADING_SCALES: GradingScale[] = [
     name: 'JNTU (10-point Scale)',
     maxScale: 10,
     isCustom: false,
+    region: 'India',
     description: 'Jawaharlal Nehru Technological University R18/R22 Scheme',
     grades: [
       { label: 'O', point: 10 },
@@ -106,6 +112,7 @@ export const PRESET_GRADING_SCALES: GradingScale[] = [
     name: 'US 4.0 GPA Scale',
     maxScale: 4,
     isCustom: false,
+    region: 'North America',
     description: 'Standard 4.0 GPA Scale for US and International Universities',
     grades: [
       { label: 'A', point: 4.0 },
@@ -118,6 +125,57 @@ export const PRESET_GRADING_SCALES: GradingScale[] = [
       { label: 'C-', point: 1.7 },
       { label: 'D+', point: 1.3 },
       { label: 'D', point: 1.0 },
+      { label: 'F', point: 0.0 },
+    ],
+  },
+  {
+    id: 'uk-honours',
+    name: 'UK Honours Classification',
+    maxScale: 4,
+    isCustom: false,
+    region: 'UK & Europe',
+    description: 'UK Degree Honours System (1st, 2:1 Upper Second, 2:2 Lower Second, 3rd, Fail)',
+    grades: [
+      { label: '1st', point: 4.0 },
+      { label: '2:1', point: 3.3 },
+      { label: '2:2', point: 2.7 },
+      { label: '3rd', point: 2.0 },
+      { label: 'Fail', point: 0.0 },
+    ],
+  },
+  {
+    id: 'german-scale',
+    name: 'German Inverted Scale (1.0 - 5.0)',
+    maxScale: 5,
+    isCustom: false,
+    region: 'UK & Europe',
+    description: 'German University System (1.0 Sehr Gut, 2.0 Gut, 3.0 Befriedigend, 4.0 Ausreichend, 5.0 Nicht Bestanden)',
+    grades: [
+      { label: '1.0', point: 1.0 },
+      { label: '1.3', point: 1.3 },
+      { label: '1.7', point: 1.7 },
+      { label: '2.0', point: 2.0 },
+      { label: '2.3', point: 2.3 },
+      { label: '2.7', point: 2.7 },
+      { label: '3.0', point: 3.0 },
+      { label: '3.3', point: 3.3 },
+      { label: '3.7', point: 3.7 },
+      { label: '4.0', point: 4.0 },
+      { label: '5.0', point: 5.0 },
+    ],
+  },
+  {
+    id: 'aus-7gpa',
+    name: 'Australia 7.0 GPA Scale',
+    maxScale: 7,
+    isCustom: false,
+    region: 'Australia & Asia-Pacific',
+    description: 'Australian Universities 7-point Scale (HD: 7, D: 6, C: 5, P: 4, F: 0)',
+    grades: [
+      { label: 'HD', point: 7.0 },
+      { label: 'D', point: 6.0 },
+      { label: 'C', point: 5.0 },
+      { label: 'P', point: 4.0 },
       { label: 'F', point: 0.0 },
     ],
   },
