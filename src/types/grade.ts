@@ -10,6 +10,7 @@ export interface GradingScale {
   isCustom: boolean;
   grades: Grade[];
   description?: string;
+  region?: string;
 }
 
 export interface Subject {

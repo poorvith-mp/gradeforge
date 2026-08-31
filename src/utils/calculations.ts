@@ -1,4 +1,4 @@
-import { GradingScale, Subject, Semester, SemesterCalculation, OverallCalculation, TargetPlanResult, Grade } from '../types/grade';
+import type { GradingScale, Subject, Semester, SemesterCalculation, OverallCalculation, TargetPlanResult, Grade } from '../types/grade.ts';
 
 export function calculateSGPA(subjects: Subject[], scale: GradingScale): SemesterCalculation {
   if (!Array.isArray(subjects) || !scale?.grades) {
@@ -192,13 +192,30 @@ export function validateScaleEntries(entries: Partial<Grade>[]): {
 export const displayGrade = (value: number | null | undefined): string =>
   value === null || value === undefined || !Number.isFinite(value) ? '—' : value.toFixed(2);
 
-export function convertToPercentage(cgpa: number | null, scaleId: string): string {
+export function convertToPercentage(cgpa: number | null, scaleId: string, maxScale: number = 10): string {
   if (cgpa === null || !Number.isFinite(cgpa)) return '—';
   if (scaleId === 'vtu') {
     // VTU official formula: Percentage = (CGPA - 0.75) * 10
     const pct = Math.max(0, (cgpa - 0.75) * 10);
     return `${pct.toFixed(2)}% (VTU)`;
   }
-  // Generic 10-point: CGPA * 10 or 9.5
+  if (scaleId === 'mumbai-univ') {
+    // Mumbai University formula: 7.1 * CGPA + 11 (if CGPA < 7) else 7.4 * CGPA + 12
+    const pct = cgpa >= 7 ? 7.4 * cgpa + 12 : 7.1 * cgpa + 11;
+    return `${Math.min(100, Math.max(0, pct)).toFixed(2)}% (MU)`;
+  }
+  if (scaleId === 'german-scale') {
+    // German Inverted formula (Bavarian formula): (1 + 3 * (5 - N) / (5 - 1)) mapped to %: (5 - N)/4 * 100
+    const pct = Math.max(0, Math.min(100, ((5.0 - cgpa) / 4.0) * 100));
+    return `${pct.toFixed(2)}% (German Equiv)`;
+  }
+  if (scaleId === 'us-4gpa' || maxScale === 4) {
+    const pct = (cgpa / 4) * 100;
+    return `${pct.toFixed(2)}%`;
+  }
+  if (maxScale && maxScale > 0 && maxScale !== 10) {
+    return `${((cgpa / maxScale) * 100).toFixed(2)}%`;
+  }
+  // Generic 10-point standard
   return `${(cgpa * 10).toFixed(2)}%`;
 }
