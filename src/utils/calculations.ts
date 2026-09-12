@@ -219,3 +219,42 @@ export function convertToPercentage(cgpa: number | null, scaleId: string, maxSca
   // Generic 10-point standard
   return `${(cgpa * 10).toFixed(2)}%`;
 }
+
+export function formatWorkedSGPA(subjects: Subject[], scale: GradingScale): string {
+  if (!Array.isArray(subjects) || !scale?.grades) return '—';
+  const pointMap = new Map<string, number>(
+    scale.grades.map((g) => [g.label.trim().toUpperCase(), Number(g.point)])
+  );
+  const terms: string[] = [];
+  let totalCredits = 0;
+  let weightedPoints = 0;
+
+  for (const sub of subjects) {
+    const credit = typeof sub.credits === 'number' ? sub.credits : parseFloat(String(sub.credits));
+    const gradeLabel = String(sub.gradeLabel ?? '').trim().toUpperCase();
+    const point = pointMap.get(gradeLabel);
+    if (Number.isFinite(credit) && credit > 0 && point !== undefined && Number.isFinite(point)) {
+      terms.push(`${credit}×${point}`);
+      totalCredits += credit;
+      weightedPoints += credit * point;
+    }
+  }
+
+  if (terms.length === 0 || totalCredits === 0) return '—';
+  const sgpa = weightedPoints / totalCredits;
+  return `(${terms.join(' + ')}) ÷ ${totalCredits} = ${sgpa.toFixed(2)}`;
+}
+
+export function getPercentageFormula(scale: GradingScale): string {
+  if (scale.formula?.percentage) {
+    return scale.formula.percentage;
+  }
+  if (scale.maxScale === 4) {
+    return '(CGPA ÷ 4) × 100';
+  }
+  if (scale.maxScale && scale.maxScale > 0 && scale.maxScale !== 10) {
+    return `(CGPA ÷ ${scale.maxScale}) × 100`;
+  }
+  return 'CGPA × 10';
+}
+

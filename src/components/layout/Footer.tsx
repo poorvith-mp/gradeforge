@@ -1,9 +1,12 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 export const Footer: React.FC = () => {
+  const location = useLocation();
+  if (location.pathname === '/print') return null;
+
   return (
-    <footer className="w-[min(1100px,90vw)] mx-auto border-t border-gpline py-9 mt-16 text-gpmuted text-sm">
+    <footer className="print:hidden w-[min(1100px,90vw)] mx-auto border-t border-gpline py-9 mt-16 text-gpmuted text-sm">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
         <div className="space-y-2">
           <p className="m-0 text-ink/90 font-medium">

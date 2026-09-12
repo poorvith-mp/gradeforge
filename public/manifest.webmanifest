@@ -1,0 +1,25 @@
+{
+  "name": "GradeForge",
+  "short_name": "GradeForge",
+  "description": "Calculate SGPA and CGPA without a spreadsheet.",
+  "start_url": "/calculator",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#246BCE",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

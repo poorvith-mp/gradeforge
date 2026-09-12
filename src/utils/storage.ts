@@ -1,5 +1,5 @@
-import { GradeState, GradingScale, Semester } from '../types/grade';
-import { PRESET_GRADING_SCALES } from '../constants/presets';
+import type { GradeState, GradingScale, Semester } from '../types/grade.ts';
+import { PRESET_GRADING_SCALES } from '../constants/presets.ts';
 
 const STORAGE_KEY = 'gradepath_state_v2';
 const ONBOARDING_SEEN_KEY = 'gradepath_onboarded';
@@ -54,10 +54,16 @@ export function validateState(value: unknown): GradeState {
 
   const selectedScaleId = bounded(raw.selectedScaleId, 80) || 'vtu';
 
+  const profile =
+    raw.profile && typeof raw.profile === 'object' && typeof raw.profile.name === 'string' && raw.profile.name.trim()
+      ? { name: bounded(raw.profile.name.trim(), 100) }
+      : undefined;
+
   return {
     selectedScaleId,
     customScales,
     semesters,
+    ...(profile ? { profile } : {}),
   };
 }
 

@@ -14,20 +14,32 @@ Most online GPA calculators are packed with ads, break when your university chan
 
 ## Features
 
-- Presets for VTU CBCS, Anna University, Mumbai University, KTU, JNTU, standard 10-point, and US 4.0 GPA scales.
-- Custom scale builder if your college uses custom grade points.
-- Target CGPA / What-If planner to figure out the exact SGPA you need in upcoming semesters.
-- SGPA progression chart and credit breakdown.
-- Export to CSV or JSON backup, plus a printable transcript format.
-- 100% browser-local storage. No accounts, no database, no tracking of your grades.
+- **Install as an App**: Progressive Web App (PWA) with complete offline support. Install it on Android, iOS, or desktop and calculate grades without an internet connection.
+- **See the Formula**: Formula transparency panel shows the exact mathematical rules and step-by-step worked numbers for your active semester.
+- **University Presets & Provenance**: Verified presets for VTU CBCS, Anna University, Mumbai University, KTU, JNTU, US 4.0 GPA, UK Honours, and German scales, linked directly to official regulations.
+- **Add Your University**: Easily contribute your institution's grading scheme via open PRs with verified official links.
+- **Printable Unofficial Summary**: Generate clean, printer-ready A4 academic summaries at `/print` with a permanent unofficial watermark.
+- **Share a Plan**: Share read-only plans with classmates via secure, compressed URL hashes (`#plan=`) with zero server storage.
+- **Target CGPA Planner**: What-If simulator calculating required upcoming SGPA to hit your dream graduation CGPA.
+- **Privacy Guarantee**: 100% browser-local storage (`localStorage`). No accounts, no telemetry, no analytics, and zero external network calls.
 
-## Formula
+## Mathematical Formulas
 
+### Semester SGPA
 ```text
 SGPA = Σ(credit × grade point) ÷ Σ(credit)
 ```
 
-CGPA uses the same credit-weighted math across all semesters. Empty rows or incomplete credit entries are skipped automatically.
+### Cumulative CGPA
+```text
+CGPA = Σ(semester SGPA × semester credits) ÷ Σ(total credits)
+```
+
+### Percentage Equivalents
+- **VTU**: `Percentage = (CGPA − 0.75) × 10`
+- **Mumbai University**: Piecewise `if CGPA < 7: (7.1 × CGPA) + 11 else: (7.4 × CGPA) + 12`
+- **Standard 10-Point (UGC/AICTE)**: `Percentage = CGPA × 10`
+- **US 4.0 Scale**: `Percentage = (CGPA ÷ 4) × 100`
 
 ## Running locally
 

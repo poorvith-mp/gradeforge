@@ -8,6 +8,14 @@ export const PRESET_GRADING_SCALES: GradingScale[] = [
     isCustom: false,
     region: 'India',
     description: 'Visvesvaraya Technological University (S: 10, A: 9, B: 8, C: 7, D: 6, E: 5, F: 0)',
+    formula: {
+      sgpa: 'SGPA = Σ(credit × grade point) ÷ Σ(credit)',
+      cgpa: 'CGPA = Σ(semester SGPA × semester credits) ÷ Σ(total credits)',
+      percentage: '(CGPA − 0.75) × 10',
+      note: 'VTU CBCS official conversion formula: Percentage = (CGPA - 0.75) * 10',
+    },
+    verifiedAgainst: 'https://vtu.ac.in',
+    verifiedOn: '2026-09-01',
     grades: [
       { label: 'S', point: 10 },
       { label: 'A', point: 9 },
@@ -25,6 +33,13 @@ export const PRESET_GRADING_SCALES: GradingScale[] = [
     isCustom: false,
     region: 'India',
     description: 'Anna University Affiliated Colleges (O: 10, A+: 9, A: 8, B+: 7, B: 6, C: 5, U: 0)',
+    formula: {
+      sgpa: 'SGPA = Σ(credit × grade point) ÷ Σ(credit)',
+      cgpa: 'CGPA = Σ(semester SGPA × semester credits) ÷ Σ(total credits)',
+      percentage: 'CGPA × 10',
+    },
+    verifiedAgainst: 'https://www.annauniv.edu',
+    verifiedOn: '2026-09-01',
     grades: [
       { label: 'O', point: 10 },
       { label: 'A+', point: 9 },
@@ -42,6 +57,13 @@ export const PRESET_GRADING_SCALES: GradingScale[] = [
     isCustom: false,
     region: 'India',
     description: 'Standard UGC/AICTE 10-point scale (O, A+, A, B+, B, C, P, F)',
+    formula: {
+      sgpa: 'SGPA = Σ(credit × grade point) ÷ Σ(credit)',
+      cgpa: 'CGPA = Σ(semester SGPA × semester credits) ÷ Σ(total credits)',
+      percentage: 'CGPA × 10',
+    },
+    verifiedAgainst: 'https://www.ugc.gov.in',
+    verifiedOn: '2026-09-01',
     grades: [
       { label: 'O', point: 10 },
       { label: 'A+', point: 9 },
@@ -60,6 +82,14 @@ export const PRESET_GRADING_SCALES: GradingScale[] = [
     isCustom: false,
     region: 'India',
     description: 'University of Mumbai CBCS Grading Scheme',
+    formula: {
+      sgpa: 'SGPA = Σ(credit × grade point) ÷ Σ(credit)',
+      cgpa: 'CGPA = Σ(semester SGPA × semester credits) ÷ Σ(total credits)',
+      percentage: 'if CGPA < 7: (7.1 × CGPA) + 11 else: (7.4 × CGPA) + 12',
+      note: 'Mumbai University piecewise conversion formula for CBCS',
+    },
+    verifiedAgainst: 'https://mu.ac.in',
+    verifiedOn: '2026-09-01',
     grades: [
       { label: 'O', point: 10 },
       { label: 'A', point: 9 },
@@ -78,6 +108,13 @@ export const PRESET_GRADING_SCALES: GradingScale[] = [
     isCustom: false,
     region: 'India',
     description: 'APJ Abdul Kalam Technological University Scheme',
+    formula: {
+      sgpa: 'SGPA = Σ(credit × grade point) ÷ Σ(credit)',
+      cgpa: 'CGPA = Σ(semester SGPA × semester credits) ÷ Σ(total credits)',
+      percentage: 'CGPA × 10',
+    },
+    verifiedAgainst: 'https://ktu.edu.in',
+    verifiedOn: '2026-09-01',
     grades: [
       { label: 'S', point: 10 },
       { label: 'A+', point: 9 },
@@ -96,6 +133,13 @@ export const PRESET_GRADING_SCALES: GradingScale[] = [
     isCustom: false,
     region: 'India',
     description: 'Jawaharlal Nehru Technological University R18/R22 Scheme',
+    formula: {
+      sgpa: 'SGPA = Σ(credit × grade point) ÷ Σ(credit)',
+      cgpa: 'CGPA = Σ(semester SGPA × semester credits) ÷ Σ(total credits)',
+      percentage: 'CGPA × 10',
+    },
+    verifiedAgainst: 'https://jntuh.ac.in',
+    verifiedOn: '2026-09-01',
     grades: [
       { label: 'O', point: 10 },
       { label: 'A+', point: 9 },
@@ -114,6 +158,13 @@ export const PRESET_GRADING_SCALES: GradingScale[] = [
     isCustom: false,
     region: 'North America',
     description: 'Standard 4.0 GPA Scale for US and International Universities',
+    formula: {
+      sgpa: 'SGPA = Σ(credit × grade point) ÷ Σ(credit)',
+      cgpa: 'CGPA = Σ(semester SGPA × semester credits) ÷ Σ(total credits)',
+      percentage: '(CGPA ÷ 4) × 100',
+    },
+    verifiedAgainst: 'https://en.wikipedia.org/wiki/Academic_grading_in_the_United_States',
+    verifiedOn: '2026-09-01',
     grades: [
       { label: 'A', point: 4.0 },
       { label: 'A-', point: 3.7 },
@@ -135,6 +186,11 @@ export const PRESET_GRADING_SCALES: GradingScale[] = [
     isCustom: false,
     region: 'UK & Europe',
     description: 'UK Degree Honours System (1st, 2:1 Upper Second, 2:2 Lower Second, 3rd, Fail)',
+    formula: {
+      sgpa: 'SGPA = Σ(credit × grade point) ÷ Σ(credit)',
+      cgpa: 'CGPA = Σ(semester SGPA × semester credits) ÷ Σ(total credits)',
+      percentage: '(CGPA ÷ 4) × 100',
+    },
     grades: [
       { label: '1st', point: 4.0 },
       { label: '2:1', point: 3.3 },
@@ -150,6 +206,12 @@ export const PRESET_GRADING_SCALES: GradingScale[] = [
     isCustom: false,
     region: 'UK & Europe',
     description: 'German University System (1.0 Sehr Gut, 2.0 Gut, 3.0 Befriedigend, 4.0 Ausreichend, 5.0 Nicht Bestanden)',
+    formula: {
+      sgpa: 'SGPA = Σ(credit × grade point) ÷ Σ(credit)',
+      cgpa: 'CGPA = Σ(semester SGPA × semester credits) ÷ Σ(total credits)',
+      percentage: '((5.0 − CGPA) ÷ 4.0) × 100',
+      note: 'Modified Bavarian formula equivalent percentage',
+    },
     grades: [
       { label: '1.0', point: 1.0 },
       { label: '1.3', point: 1.3 },
@@ -171,6 +233,11 @@ export const PRESET_GRADING_SCALES: GradingScale[] = [
     isCustom: false,
     region: 'Australia & Asia-Pacific',
     description: 'Australian Universities 7-point Scale (HD: 7, D: 6, C: 5, P: 4, F: 0)',
+    formula: {
+      sgpa: 'SGPA = Σ(credit × grade point) ÷ Σ(credit)',
+      cgpa: 'CGPA = Σ(semester SGPA × semester credits) ÷ Σ(total credits)',
+      percentage: '(CGPA ÷ 7) × 100',
+    },
     grades: [
       { label: 'HD', point: 7.0 },
       { label: 'D', point: 6.0 },

@@ -1,29 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { generateShareUrl } from '../../utils/attribution';
-import { X, Copy, Check, MessageCircle, Share2, Send } from 'lucide-react';
+import { encodePlanToUrl } from '../../utils/sharePlan';
+import { useGrade } from '../../context/GradeContext';
+import { X, Copy, Check, MessageCircle, Share2, Send, FileSpreadsheet, Globe } from 'lucide-react';
 
 interface ShareModalProps {
   onClose: () => void;
 }
 
 export const ShareModal: React.FC<ShareModalProps> = ({ onClose }) => {
-  const [copied, setCopied] = useState(false);
-  const shareUrl = generateShareUrl('direct_share');
-  const shareText = 'Calculate SGPA & CGPA easily without spreadsheets. Features VTU, Anna Univ, and Target CGPA planning!';
+  const { state } = useGrade();
+  const [tab, setTab] = useState<'app' | 'plan'>('plan');
+  const [copiedApp, setCopiedApp] = useState(false);
+  const [copiedPlan, setCopiedPlan] = useState(false);
+  const [planUrl, setPlanUrl] = useState<string>('');
+  const [planError, setPlanError] = useState<string>('');
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(shareUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
+  const appShareUrl = generateShareUrl('direct_share');
+  const appShareText = 'Calculate SGPA & CGPA easily without spreadsheets. Features VTU, Anna Univ, and Target CGPA planning!';
+
+  useEffect(() => {
+    if (state.semesters.length > 0) {
+      encodePlanToUrl(state).then((res) => {
+        if (res.success && res.url) {
+          setPlanUrl(res.url);
+          setPlanError('');
+        } else {
+          setPlanError(res.error || 'Failed to encode plan.');
+        }
+      });
+    } else {
+      setPlanUrl('');
+    }
+  }, [state]);
+
+  const handleCopyApp = () => {
+    navigator.clipboard.writeText(appShareUrl);
+    setCopiedApp(true);
+    setTimeout(() => setCopiedApp(false), 2500);
+  };
+
+  const handleCopyPlan = () => {
+    if (!planUrl) return;
+    navigator.clipboard.writeText(planUrl);
+    setCopiedPlan(true);
+    setTimeout(() => setCopiedPlan(false), 2500);
   };
 
   const handleWhatsApp = () => {
-    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`;
+    const textToShare = tab === 'plan' && planUrl ? `Check out my academic plan on GradeForge: ${planUrl}` : `${appShareText} ${appShareUrl}`;
+    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(textToShare)}`;
     window.open(url, '_blank');
   };
 
   const handleTwitter = () => {
-    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+    const textToShare = tab === 'plan' && planUrl ? 'Check out my academic grade calculation on GradeForge!' : appShareText;
+    const urlToShare = tab === 'plan' && planUrl ? planUrl : appShareUrl;
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(textToShare)}&url=${encodeURIComponent(urlToShare)}`;
     window.open(url, '_blank');
   };
 
@@ -51,34 +84,104 @@ export const ShareModal: React.FC<ShareModalProps> = ({ onClose }) => {
           </button>
         </div>
 
-        <p className="text-xs sm:text-sm text-gpmuted mb-4">
-          Help your classmates calculate their SGPA and simulate their Target CGPA with zero ads and complete privacy.
-        </p>
-
-        {/* Copy Link Input */}
-        <div className="flex items-center gap-2 p-1.5 border border-gpline bg-bg mb-4">
-          <input
-            type="text"
-            readOnly
-            value={shareUrl}
-            className="w-full px-2 py-1 bg-transparent text-ink font-mono text-xs focus:outline-none"
-          />
+        {/* Tab Buttons */}
+        <div className="flex border-b border-gpline mb-4 font-mono text-xs">
           <button
             type="button"
-            onClick={handleCopy}
-            className="inline-flex items-center gap-1 px-3 py-1.5 bg-gpblue text-white text-xs font-bold hover:opacity-90 transition-opacity cursor-pointer shrink-0"
+            onClick={() => setTab('plan')}
+            className={`flex-1 py-2 font-bold border-b-2 transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
+              tab === 'plan' ? 'border-gpblue text-gpblue bg-gpwash/40' : 'border-transparent text-gpmuted hover:text-ink'
+            }`}
           >
-            {copied ? (
-              <>
-                <Check className="w-3.5 h-3.5" /> Copied
-              </>
-            ) : (
-              <>
-                <Copy className="w-3.5 h-3.5" /> Copy
-              </>
-            )}
+            <FileSpreadsheet className="w-3.5 h-3.5" /> Share My Plan
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('app')}
+            className={`flex-1 py-2 font-bold border-b-2 transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
+              tab === 'app' ? 'border-gpblue text-gpblue bg-gpwash/40' : 'border-transparent text-gpmuted hover:text-ink'
+            }`}
+          >
+            <Globe className="w-3.5 h-3.5" /> Share Calculator
           </button>
         </div>
+
+        {tab === 'plan' ? (
+          <div>
+            <p className="text-xs sm:text-sm text-gpmuted mb-3">
+              Share a read-only link to your exact grades and target simulations. Anyone with this link can view your entered subjects.
+            </p>
+
+            {planError ? (
+              <div className="p-3 bg-red-50 border border-red-200 text-red-800 text-xs font-mono mb-4">
+                {planError}
+              </div>
+            ) : !planUrl ? (
+              <div className="p-3 bg-gpwash border border-gpline text-gpmuted text-xs font-mono mb-4">
+                Add at least one semester with subjects to generate a shareable plan link.
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 p-1.5 border border-gpline bg-bg mb-4">
+                <input
+                  type="text"
+                  readOnly
+                  value={planUrl}
+                  className="w-full px-2 py-1 bg-transparent text-ink font-mono text-xs focus:outline-none overflow-ellipsis"
+                />
+                <button
+                  type="button"
+                  onClick={handleCopyPlan}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-gpblue text-white text-xs font-bold hover:opacity-90 transition-opacity cursor-pointer shrink-0"
+                >
+                  {copiedPlan ? (
+                    <>
+                      <Check className="w-3.5 h-3.5" /> Copied
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" /> Copy Link
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+
+            <p className="text-[11px] font-mono text-gpmuted mb-4">
+              All plan data is encoded directly into the URL fragment (#plan). It stays in the browser and never touches any server.
+            </p>
+          </div>
+        ) : (
+          <div>
+            <p className="text-xs sm:text-sm text-gpmuted mb-4">
+              Help your classmates calculate their SGPA and simulate their Target CGPA with zero ads and complete privacy.
+            </p>
+
+            {/* Copy Link Input */}
+            <div className="flex items-center gap-2 p-1.5 border border-gpline bg-bg mb-4">
+              <input
+                type="text"
+                readOnly
+                value={appShareUrl}
+                className="w-full px-2 py-1 bg-transparent text-ink font-mono text-xs focus:outline-none"
+              />
+              <button
+                type="button"
+                onClick={handleCopyApp}
+                className="inline-flex items-center gap-1 px-3 py-1.5 bg-gpblue text-white text-xs font-bold hover:opacity-90 transition-opacity cursor-pointer shrink-0"
+              >
+                {copiedApp ? (
+                  <>
+                    <Check className="w-3.5 h-3.5" /> Copied
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5" /> Copy
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Quick Social Buttons */}
         <div className="grid grid-cols-2 gap-2.5 mb-2">

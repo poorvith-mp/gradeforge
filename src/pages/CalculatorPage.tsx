@@ -9,22 +9,61 @@ import { QuickstartModal } from '../components/onboarding/QuickstartModal';
 import { ExportImportModal } from '../components/calculator/ExportImportModal';
 import { isOnboardingCompleted } from '../utils/storage';
 import { initializeAttribution } from '../utils/attribution';
-import { Sparkles } from 'lucide-react';
+import { decodePlanFromHash } from '../utils/sharePlan';
+import { Sparkles, Eye, AlertCircle } from 'lucide-react';
 
 export const CalculatorPage: React.FC = () => {
-  const { state, loadSampleData } = useGrade();
+  const {
+    state,
+    isReadOnly,
+    loadSampleData,
+    setPreviewState,
+    commitPreviewState,
+    cancelPreviewState,
+  } = useGrade();
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
+  const [hashError, setHashError] = useState<string>('');
 
   useEffect(() => {
     // Initialize first-party attribution capture on load
     initializeAttribution();
 
+    // Check URL hash for shared plan
+    const hash = window.location.hash;
+    if (hash.startsWith('#plan=') || hash.startsWith('#planr=')) {
+      decodePlanFromHash(hash).then((res) => {
+        if (res.success && res.state) {
+          setPreviewState(res.state);
+          setHashError('');
+        } else {
+          setHashError('This link is invalid. Your local calculations are untouched.');
+        }
+      });
+    }
+
     // Open onboarding modal if user has never visited and has 0 semesters
-    if (!isOnboardingCompleted() && state.semesters.length === 0) {
+    if (!isOnboardingCompleted() && state.semesters.length === 0 && !hash.startsWith('#plan')) {
       setIsOnboardingOpen(true);
     }
-  }, [state.semesters.length]);
+  }, []);
+
+  const handleCopyPlan = () => {
+    if (window.confirm('Copy this shared plan into your calculator? This will replace your current local entries.')) {
+      commitPreviewState();
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  };
+
+  const handleDismissShared = () => {
+    cancelPreviewState();
+    window.history.replaceState(null, '', window.location.pathname);
+  };
+
+  const handleDismissError = () => {
+    setHashError('');
+    window.history.replaceState(null, '', window.location.pathname);
+  };
 
   const schema = {
     '@context': 'https://schema.org',
@@ -49,6 +88,49 @@ export const CalculatorPage: React.FC = () => {
       />
 
       <main className="w-[min(1100px,90vw)] mx-auto py-8 sm:py-12">
+        {/* Shared Plan Read-Only Banner */}
+        {isReadOnly && (
+          <aside aria-label="Shared plan read-only notice" className="mb-6 p-4 bg-amber-50 border border-amber-300 text-amber-900 text-xs sm:text-sm font-mono flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+            <div className="flex items-center gap-2">
+              <Eye className="w-4 h-4 text-amber-700 shrink-0" />
+              <span>Viewing a shared plan (read-only). Copy into my calculator?</span>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={handleCopyPlan}
+                className="px-3 py-1.5 bg-gpblue text-white text-xs font-bold hover:opacity-90 transition-opacity cursor-pointer"
+              >
+                Copy into my calculator
+              </button>
+              <button
+                type="button"
+                onClick={handleDismissShared}
+                className="px-3 py-1.5 bg-paper border border-gpline text-ink text-xs font-bold hover:bg-gpwash transition-colors cursor-pointer"
+              >
+                Dismiss
+              </button>
+            </div>
+          </aside>
+        )}
+
+        {/* Invalid Shared Link Banner */}
+        {hashError && (
+          <aside aria-label="Invalid shared link warning" className="mb-6 p-4 bg-red-50 border border-red-200 text-red-800 text-xs sm:text-sm font-mono flex items-center justify-between gap-3 shadow-sm">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-gpred shrink-0" />
+              <span>{hashError}</span>
+            </div>
+            <button
+              type="button"
+              onClick={handleDismissError}
+              className="text-xs font-bold underline hover:opacity-80 cursor-pointer shrink-0"
+            >
+              Dismiss
+            </button>
+          </aside>
+        )}
+
         {/* Page Lead */}
         <section className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">

@@ -154,10 +154,37 @@ export const DocsPage: React.FC = () => {
 
             <div className="pt-4">
               <h3 className="text-base font-bold text-ink mb-1.5 flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-gpblue shrink-0" /> What if my university is not in the preset list?
+                <CheckCircle2 className="w-4 h-4 text-gpblue shrink-0" /> Can I install GradeForge and use it offline?
               </h3>
               <p className="text-gpmuted text-xs sm:text-sm leading-relaxed m-0 pl-5">
-                You can create a custom grading scale in seconds. Click "+ Create Custom Grading Scale..." from the scale dropdown to define your institution's letter grades and point boundaries (e.g. 0 to 10 or 0 to 4.0).
+                Yes! GradeForge is a Progressive Web App (PWA). Click the "Install" icon in your browser address bar on desktop, or "Add to Home Screen" on Android / iOS. It functions 100% offline with zero internet access required.
+              </p>
+            </div>
+
+            <div className="pt-4">
+              <h3 className="text-base font-bold text-ink mb-1.5 flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-gpblue shrink-0" /> How do shareable plan links work?
+              </h3>
+              <p className="text-gpmuted text-xs sm:text-sm leading-relaxed m-0 pl-5">
+                Click <strong>"Share Calculator" → "Share My Plan"</strong> to generate a link containing your semesters and grades encoded in the URL hash (<code className="bg-gpwash px-1">#plan=...</code>). All data stays in the browser URL and is never stored on a server. Anyone opening the link sees a read-only preview that they can choose to copy into their calculator.
+              </p>
+            </div>
+
+            <div className="pt-4">
+              <h3 className="text-base font-bold text-ink mb-1.5 flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-gpblue shrink-0" /> How do I get an unofficial printable summary or PDF?
+              </h3>
+              <p className="text-gpmuted text-xs sm:text-sm leading-relaxed m-0 pl-5">
+                Click <strong>"Printable Summary"</strong> on the calculator page or navigate directly to <code className="bg-gpwash px-1">/print</code>. You can enter your name (stored only locally in your browser) and click "Print / Save as PDF" for a cleanly formatted A4 sheet. Every page includes an official disclaimer watermark.
+              </p>
+            </div>
+
+            <div className="pt-4">
+              <h3 className="text-base font-bold text-ink mb-1.5 flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-gpblue shrink-0" /> How can I add my university to the official presets?
+              </h3>
+              <p className="text-gpmuted text-xs sm:text-sm leading-relaxed m-0 pl-5">
+                You can submit an open source Pull Request on GitHub. Follow the guide in <a href="https://github.com/poorvith-mp/gradeforge/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" className="text-gpblue underline">CONTRIBUTING.md</a> and provide a link to your university's official academic regulations document.
               </p>
             </div>
           </div>

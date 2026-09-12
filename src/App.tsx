@@ -9,6 +9,7 @@ import { CalculatorPage } from './pages/CalculatorPage';
 import { AboutPage } from './pages/AboutPage';
 import { DocsPage } from './pages/DocsPage';
 import { ContactPage } from './pages/ContactPage';
+import { PrintPage } from './pages/PrintPage';
 
 export const App: React.FC = () => {
   return (
@@ -22,6 +23,8 @@ export const App: React.FC = () => {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/calculator" element={<CalculatorPage />} />
                 <Route path="/calculator.html" element={<Navigate to="/calculator" replace />} />
+                <Route path="/print" element={<PrintPage />} />
+                <Route path="/print.html" element={<Navigate to="/print" replace />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/about.html" element={<Navigate to="/about" replace />} />
                 <Route path="/docs" element={<DocsPage />} />

@@ -3,6 +3,13 @@ export interface Grade {
   point: number;
 }
 
+export interface ScaleFormula {
+  sgpa: string;
+  cgpa: string;
+  percentage?: string;
+  note?: string;
+}
+
 export interface GradingScale {
   id: string;
   name: string;
@@ -11,6 +18,9 @@ export interface GradingScale {
   grades: Grade[];
   description?: string;
   region?: string;
+  formula?: ScaleFormula;
+  verifiedAgainst?: string;
+  verifiedOn?: string;
 }
 
 export interface Subject {
@@ -30,6 +40,9 @@ export interface GradeState {
   selectedScaleId: string;
   customScales: GradingScale[];
   semesters: Semester[];
+  profile?: {
+    name?: string;
+  };
 }
 
 export interface SemesterCalculation {

@@ -14,8 +14,10 @@ export const Header: React.FC = () => {
     { name: 'Support', path: '/contact' },
   ];
 
+  if (location.pathname === '/print') return null;
+
   return (
-    <header className="sticky top-0 z-40 flex items-center justify-between gap-5 min-h-[72px] px-[5vw] py-2.5 border-b border-gpline bg-[color-mix(in_srgb,var(--bg)_92%,transparent)] backdrop-blur-md transition-colors duration-200">
+    <header className="print:hidden sticky top-0 z-40 flex items-center justify-between gap-5 min-h-[72px] px-[5vw] py-2.5 border-b border-gpline bg-[color-mix(in_srgb,var(--bg)_92%,transparent)] backdrop-blur-md transition-colors duration-200">
       <Link to="/" className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-gpgold">
         {/* Exact GradeMark signature SVG logo */}
         <span className="grade-mark relative grid grid-cols-3 items-end w-[39px] h-[32px]" aria-hidden="true">

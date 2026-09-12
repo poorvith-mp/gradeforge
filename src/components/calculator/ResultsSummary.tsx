@@ -8,6 +8,8 @@ import { ReportCardModal } from './ReportCardModal';
 import { ShareModal } from './ShareModal';
 import { DiscoverySurvey } from './DiscoverySurvey';
 
+import { FormulaPanel } from './FormulaPanel';
+
 export const ResultsSummary: React.FC = () => {
   const { overall, activeScale, clearAllData } = useGrade();
   const [isPlannerOpen, setIsPlannerOpen] = useState(false);
@@ -27,7 +29,7 @@ export const ResultsSummary: React.FC = () => {
       </div>
 
       {/* Metric Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-5">
         <div className="p-4 bg-gpwash border border-gpline flex flex-col justify-between">
           <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-gpmuted block">
             Overall CGPA
@@ -65,6 +67,9 @@ export const ResultsSummary: React.FC = () => {
         </div>
       </div>
 
+      {/* Formula Transparency & Worked Numbers Panel */}
+      <FormulaPanel />
+
       {/* Action Toolbar */}
       <div className="flex flex-wrap items-center gap-2.5 pt-2 border-t border-gpline/60 mb-6">
         <button
@@ -91,15 +96,14 @@ export const ResultsSummary: React.FC = () => {
           <Download className="w-3.5 h-3.5 text-gpblue" /> Backup / Export
         </button>
 
-        {overall.totalSemesters > 0 && (
-          <button
-            type="button"
-            onClick={() => setIsReportCardOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 border border-gpline bg-paper hover:bg-gpwash text-ink text-xs font-bold transition-colors cursor-pointer"
-          >
-            <Printer className="w-3.5 h-3.5 text-gpblue" /> Print Transcript
-          </button>
-        )}
+        <a
+          href="/print"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 border border-gpline bg-paper hover:bg-gpwash text-ink text-xs font-bold transition-colors cursor-pointer"
+        >
+          <Printer className="w-3.5 h-3.5 text-gpblue" /> Printable Summary
+        </a>
 
         {overall.totalSemesters > 0 && (
           <button

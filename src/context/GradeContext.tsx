@@ -8,6 +8,7 @@ interface GradeContextType {
   state: GradeState;
   activeScale: GradingScale;
   overall: OverallCalculation;
+  isReadOnly: boolean;
   setSelectedScaleId: (id: string) => void;
   saveCustomScale: (scale: GradingScale) => void;
   deleteCustomScale: (scaleId: string) => void;
@@ -21,19 +22,40 @@ interface GradeContextType {
   loadSampleData: () => void;
   clearAllData: () => void;
   importBackupState: (newState: GradeState) => void;
+  setPreviewState: (preview: GradeState | null) => void;
+  commitPreviewState: () => void;
+  cancelPreviewState: () => void;
 }
 
 const GradeContext = createContext<GradeContextType | undefined>(undefined);
 
 export const GradeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, setState] = useState<GradeState>(() => loadState());
+  const [previewState, setPreviewState] = useState<GradeState | null>(null);
+
+  const effectiveState = previewState || state;
+  const isReadOnly = Boolean(previewState);
 
   useEffect(() => {
-    saveState(state);
-  }, [state]);
+    if (!previewState) {
+      saveState(state);
+    }
+  }, [state, previewState]);
 
-  const activeScale = useMemo(() => getActiveScale(state), [state]);
-  const overall = useMemo(() => calculateOverall(state.semesters, activeScale), [state.semesters, activeScale]);
+  const activeScale = useMemo(() => getActiveScale(effectiveState), [effectiveState]);
+  const overall = useMemo(() => calculateOverall(effectiveState.semesters, activeScale), [effectiveState.semesters, activeScale]);
+
+  const commitPreviewState = () => {
+    if (previewState) {
+      setState(previewState);
+      saveState(previewState);
+      setPreviewState(null);
+    }
+  };
+
+  const cancelPreviewState = () => {
+    setPreviewState(null);
+  };
 
   const setSelectedScaleId = (id: string) => {
     setState((prev) => ({ ...prev, selectedScaleId: id }));
@@ -185,9 +207,10 @@ export const GradeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   return (
     <GradeContext.Provider
       value={{
-        state,
+        state: effectiveState,
         activeScale,
         overall,
+        isReadOnly,
         setSelectedScaleId,
         saveCustomScale,
         deleteCustomScale,
@@ -201,6 +224,9 @@ export const GradeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         loadSampleData,
         clearAllData,
         importBackupState,
+        setPreviewState,
+        commitPreviewState,
+        cancelPreviewState,
       }}
     >
       {children}
