@@ -1,43 +1,21 @@
 # Changelog
 
-All notable changes to `gradeforge` will be documented in this file.
+All notable changes to GradeForge are documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [2.1.0] - 2026-09-12
+## [2.1.0] - 2026-10-25
 
 ### Added
-- **Progressive Web App (PWA) & Full Offline Support**:
-  - Hand-crafted `manifest.webmanifest` and service worker (`sw.js`) with zero plugin dependencies.
-  - Build-time asset precaching via `scripts/build-sw.mjs`.
-  - Cache-first navigation with canonical root fallback for guaranteed offline access.
-  - Non-intrusive update notification toast ensuring uninterrupted grade entry.
-  - Standard 192px and 512px application icons.
-- **Formula Transparency Panel**:
-  - Collapsible formula inspector showing SGPA, CGPA, and institution-specific percentage conversion rules.
-  - Live step-by-step worked numbers for active semester credits and grade points (`formatWorkedSGPA`).
-  - One-click copy button for worked math lines.
-  - Mathematical drift verification test against `convertToPercentage`.
-- **Preset Provenance & Verification Badges**:
-  - Verified regulation badges with direct links to official institution documents (`verifiedAgainst`, `verifiedOn`).
-  - Clear community preset indicators for unverified regional scales.
-  - Guidelines and schema specifications in `CONTRIBUTING.md` and PR templates for university contributions.
-- **Printable Unofficial Summary**:
-  - Dedicated `/print` route generating clean, printer-friendly academic summaries formatted for A4.
-  - Optional student name stored locally in browser state (`profile.name`).
-  - Fixed, unremovable academic disclaimer watermark: *"Self-calculated with GradeForge. Not an official transcript."*
-- **Shareable Read-Only Plans**:
-  - URL hash serialization (`#plan=`) compressed via `CompressionStream` (with uncompressed `#planr=` fallback).
-  - Safe 64 KB payload and 8 000 character length guards.
-  - Interactive read-only view with "Copy into my calculator" import flow.
-  - Zero-server architecture: all plan data stays strictly within the browser address fragment.
+- **16 General Regional & International Grading Scales**: Added Central Universities / 9.5x (`cbse-central-10`), Autonomous Engineering 10-Point (`autonomous-10`), Canada 4.33 GPA (`canada-433`), European ECTS (`ects-europe`), French 20-Point (`french-20`), and Singapore / ASEAN 5.0 CAP (`singapore-5`) alongside existing Indian, North American, European, and Australian presets.
+- **Cross-System GPA & Percentage Converter**: Added an interactive bidirectional converter modal (`ConvertModal.tsx` + `src/utils/conversion.ts`) to translate scores across Indian 10-point systems (VTU, Mumbai, UGC, 9.5x), US 4.0, Canada 4.33, German 1.0-5.0, UK Honours, French 20-Point, Australia 7.0, and Singapore 5.0 scales.
+- **Custom Scale Editing & Custom Percentage Formulas**: Added an **Edit Scale** button in `ScaleSelector.tsx` and a **Percentage Formula** selector in `CustomScaleModal.tsx` (`CGPA x 10`, `CGPA x 9.5`, `(CGPA - 0.75) x 10`, and proportional `(CGPA / maxScale) x 100`).
+- **Quick Scale Search & Region Filter**: Added a live search input in `ScaleSelector.tsx` to filter presets and custom scales by name or region.
+- **Persistent Zero-Login Onboarding & Setup Guide**: Upgraded `QuickstartModal.tsx` with local student profile name persistence (`localStorage`), direct Custom Scale creation from Step 1, and a **Setup Guide** button on `CalculatorPage.tsx` to re-open onboarding anytime.
+- **Formula Transparency, Printable A4 Summary & Offline PWA**: Added step-by-step worked SGPA numbers (`FormulaPanel.tsx`), compressed URL hash plan sharing (`#plan=`), A4 printable summary (`/print`), and offline service worker precaching.
 
-## [2.0.0] - 2026-08-31
+### Fixed
+- Fixed `validateScaleEntries()` and `validateState()` clamping grade points at `10` even when a custom scale configured `maxScale > 10` (now supports `maxScale` up to `100` and preserves `formula` metadata across reloads).
+
+## [1.0.0] - 2026-04-13
 
 ### Added
-- Complete UI redesign with Tailwind CSS and academic styling tokens.
-- Target CGPA Planner modal for multi-semester goal planning.
-- Regional grading scale groupings (VTU, Anna University, Mumbai University, KTU, JNTU, US 4.0, UK Honours, German, Australian).
-- JSON backup export and import.
-- Progression charts visualizing semester-by-semester SGPA trends.
+- Initial release of GradeForge with browser-local SGPA & CGPA calculation, Target CGPA Planner, JSON/CSV backup & restore, and multi-university presets.

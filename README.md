@@ -12,16 +12,17 @@ GradeForge is a browser-local SGPA and CGPA calculator I built for students who 
 
 Most online GPA calculators are packed with ads, break when your university changes grading rules, or force you to sign up. I wanted something fast, clean, and completely private that works offline in your browser.
 
-## Features
+## Features in v2.1.0
 
-- **Install as an App**: Progressive Web App (PWA) with complete offline support. Install it on Android, iOS, or desktop and calculate grades without an internet connection.
+- **16 General Regional & International Presets**: Built-in verified scales across India (VTU CBCS, Anna University, Mumbai University, KTU, JNTU, UGC Generic 10-Point, Central Universities 9.5x, Autonomous Engineering 10-Point), North America (US 4.0, Canada 4.33), UK & Europe (UK Honours, European ECTS, German Inverted 1.0–5.0, French 20-Point), and Australia & Asia-Pacific (Australia 7.0, Singapore 5.0 CAP).
+- **Custom Scale Builder & Editor**: Create and edit custom grading scales with any maximum scale up to 100, define custom letter grades and points, and select your percentage conversion formula (`CGPA × 10`, `CGPA × 9.5`, `(CGPA − 0.75) × 10`, or proportional).
+- **Cross-System GPA & Percentage Converter**: Bidirectionally convert scores across 10-point, US 4.0, Canada 4.33, German 1.0–5.0, UK Honours, French 20-Point, Australia 7.0, and Singapore 5.0 systems.
 - **See the Formula**: Formula transparency panel shows the exact mathematical rules and step-by-step worked numbers for your active semester.
-- **University Presets & Provenance**: Verified presets for VTU CBCS, Anna University, Mumbai University, KTU, JNTU, US 4.0 GPA, UK Honours, and German scales, linked directly to official regulations.
-- **Add Your University**: Easily contribute your institution's grading scheme via open PRs with verified official links.
+- **Persistent Zero-Login Onboarding**: Configure your profile name, default grading scale, or sample data on first visit; everything persists in browser `localStorage` with zero accounts required.
 - **Printable Unofficial Summary**: Generate clean, printer-ready A4 academic summaries at `/print` with a permanent unofficial watermark.
 - **Share a Plan**: Share read-only plans with classmates via secure, compressed URL hashes (`#plan=`) with zero server storage.
-- **Target CGPA Planner**: What-If simulator calculating required upcoming SGPA to hit your dream graduation CGPA.
-- **Privacy Guarantee**: 100% browser-local storage (`localStorage`). No accounts, no telemetry, no analytics, and zero external network calls.
+- **Target CGPA Planner**: What-If simulator calculating required upcoming SGPA to hit your target graduation CGPA.
+- **Install as an Offline PWA**: Progressive Web App with complete offline support on Android, iOS, and desktop.
 
 ## Mathematical Formulas
 
@@ -38,8 +39,10 @@ CGPA = Σ(semester SGPA × semester credits) ÷ Σ(total credits)
 ### Percentage Equivalents
 - **VTU**: `Percentage = (CGPA − 0.75) × 10`
 - **Mumbai University**: Piecewise `if CGPA < 7: (7.1 × CGPA) + 11 else: (7.4 × CGPA) + 12`
-- **Standard 10-Point (UGC/AICTE)**: `Percentage = CGPA × 10`
-- **US 4.0 Scale**: `Percentage = (CGPA ÷ 4) × 100`
+- **Central Universities / CBSE (9.5x)**: `Percentage = CGPA × 9.5`
+- **Standard 10-Point (UGC / AICTE / Autonomous)**: `Percentage = CGPA × 10`
+- **German Inverted Scale (1.0 - 5.0)**: `Percentage = ((5.0 − CGPA) ÷ 4.0) × 100`
+- **Proportional International Scales (4.0, 4.33, 5.0, 7.0, 20)**: `Percentage = (CGPA ÷ MaxScale) × 100`
 
 ## Running locally
 
@@ -50,17 +53,18 @@ npm install
 npm run dev
 ```
 
-To build the production bundle:
+To build and test the production bundle:
 
 ```bash
 npm run build
+npm test
 ```
 
 The output files go straight to `dist/`.
 
 ## Contributing
 
-Pull requests are welcome. Check [CONTRIBUTING.md](CONTRIBUTING.md) for how to add university presets or fix bugs.
+Pull requests are welcome. Check [CONTRIBUTING.md](CONTRIBUTING.md) for how to add regional grading presets or fix bugs.
 
 ## License
 

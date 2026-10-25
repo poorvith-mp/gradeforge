@@ -1,6 +1,7 @@
 import React from 'react';
 import { MetaTags } from '../components/seo/MetaTags';
-import { HelpCircle, Calculator, CheckCircle2 } from 'lucide-react';
+import { PRESET_GRADING_SCALES } from '../constants/presets';
+import { HelpCircle, Calculator, CheckCircle2, Globe2, ArrowLeftRight, Sliders } from 'lucide-react';
 
 export const DocsPage: React.FC = () => {
   const faqSchema = {
@@ -25,10 +26,18 @@ export const DocsPage: React.FC = () => {
       },
       {
         '@type': 'Question',
-        name: 'How do you convert VTU CGPA to equivalent percentage?',
+        name: 'How do you convert VTU, Mumbai University, or Central University CGPA to percentage?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'As per official VTU CBCS regulations, the equivalent percentage is calculated using the formula: Percentage (%) = [CGPA - 0.75] × 10.',
+          text: 'VTU CBCS uses Percentage = (CGPA − 0.75) × 10. Mumbai University uses a piecewise formula: (7.1 × CGPA) + 11 for CGPA < 7 and (7.4 × CGPA) + 12 for CGPA ≥ 7. Central Universities and CBSE use CGPA × 9.5, while standard UGC and Autonomous institutions use CGPA × 10.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Can I create or edit my own custom grading scale in GradeForge?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Yes. You can create and edit custom grading scales with any maximum scale from 1 to 100, define custom letter grades and grade points, and pick your institution’s percentage conversion formula.',
         },
       },
       {
@@ -36,17 +45,19 @@ export const DocsPage: React.FC = () => {
         name: 'Does GradeForge store my marks or grades on a server?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'No. GradeForge operates entirely browser-locally using HTML5 localStorage. Your courses, credits, and grades never leave your browser and are never transmitted to any external server.',
+          text: 'No. GradeForge operates 100% browser-locally using HTML5 localStorage. Your courses, credits, custom scales, and grades never leave your browser and require zero login.',
         },
       },
     ],
   };
 
+  const regions = Array.from(new Set(PRESET_GRADING_SCALES.map((s) => s.region || 'Standard')));
+
   return (
     <>
       <MetaTags
         title="Formulas & Documentation — GradeForge"
-        description="Detailed SGPA & CGPA mathematical formulas, university percentage conversion rules (VTU, Anna University), and FAQ."
+        description="Detailed SGPA & CGPA mathematical formulas, 16 regional grading scales, percentage conversion rules (VTU, Mumbai, UGC, 9.5x, German, US 4.0), and FAQ."
         canonicalPath="/docs"
         schema={faqSchema}
       />
@@ -60,12 +71,12 @@ export const DocsPage: React.FC = () => {
             Formulas, schemes & calculation rules.
           </h1>
           <p className="text-gpmuted text-base sm:text-lg leading-relaxed">
-            GradeForge follows standard credit-based choice system (CBCS) formulas used by universities worldwide. Here is exactly how your SGPA, CGPA, and equivalent percentages are calculated.
+            GradeForge follows standard Credit-Based Choice System (CBCS) and international GPA formulas across 16 regional presets and customizable scales. Here is how your SGPA, CGPA, percentage equivalents, and cross-system conversions are computed.
           </p>
         </section>
 
         {/* SGPA Formula Card */}
-        <section className="p-6 sm:p-8 border border-gpline bg-paper max-w-3xl mb-8">
+        <section className="p-6 sm:p-8 border border-gpline bg-paper max-w-4xl mb-8">
           <div className="flex items-center gap-2 mb-3">
             <Calculator className="w-5 h-5 text-gpblue" />
             <h2 className="text-xl sm:text-2xl font-serif font-bold text-ink m-0">
@@ -86,7 +97,7 @@ export const DocsPage: React.FC = () => {
         </section>
 
         {/* CGPA Formula Card */}
-        <section className="p-6 sm:p-8 border border-gpline bg-paper max-w-3xl mb-8">
+        <section className="p-6 sm:p-8 border border-gpline bg-paper max-w-4xl mb-8">
           <div className="flex items-center gap-2 mb-3">
             <Calculator className="w-5 h-5 text-gpblue" />
             <h2 className="text-xl sm:text-2xl font-serif font-bold text-ink m-0">
@@ -100,32 +111,131 @@ export const DocsPage: React.FC = () => {
             CGPA = Total Weighted Grade Points (All Semesters) ÷ Total Credits (All Semesters)
           </div>
           <p className="text-xs sm:text-sm text-gpmuted leading-relaxed m-0">
-            Note: Simple arithmetic average of semester SGPAs is mathematically inaccurate when semesters have unequal credit loads. GradeForge always computes true credit-weighted cumulative averages.
+            Note: A simple arithmetic mean of semester SGPAs is inaccurate when semesters have unequal credit loads. GradeForge always computes true credit-weighted cumulative averages.
           </p>
         </section>
 
         {/* Percentage Conversions */}
-        <section className="p-6 sm:p-8 border border-gpline bg-paper max-w-3xl mb-8">
+        <section className="p-6 sm:p-8 border border-gpline bg-paper max-w-4xl mb-8">
           <h2 className="text-xl sm:text-2xl font-serif font-bold text-ink mb-4">
             3. Percentage Conversion Standards
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
             <div className="p-4 border border-gpline bg-bg/40 space-y-2">
-              <strong className="text-ink font-sans text-sm block">VTU CBCS (Karnataka)</strong>
-              <div className="font-mono text-gpblue font-bold">Percentage (%) = [CGPA - 0.75] × 10</div>
-              <p className="text-gpmuted text-xs m-0">Applicable for VTU B.E/B.Tech under CBCS regulations.</p>
+              <strong className="text-ink font-sans text-sm block">VTU CBCS (10-Point)</strong>
+              <div className="font-mono text-gpblue font-bold">Percentage (%) = (CGPA − 0.75) × 10</div>
+              <p className="text-gpmuted text-xs m-0">Official VTU CBCS percentage equivalence formula.</p>
             </div>
 
             <div className="p-4 border border-gpline bg-bg/40 space-y-2">
-              <strong className="text-ink font-sans text-sm block">Generic UGC / AICTE 10-Point</strong>
-              <div className="font-mono text-gpblue font-bold">Percentage (%) = CGPA × 10 (or 9.5)</div>
-              <p className="text-gpmuted text-xs m-0">Commonly used standard across Indian central and state universities.</p>
+              <strong className="text-ink font-sans text-sm block">Mumbai University (Piecewise 10-Point)</strong>
+              <div className="font-mono text-gpblue font-bold">if CGPA &lt; 7: 7.1×CGPA + 11 else: 7.4×CGPA + 12</div>
+              <p className="text-gpmuted text-xs m-0">Official University of Mumbai CBCS piecewise conversion.</p>
+            </div>
+
+            <div className="p-4 border border-gpline bg-bg/40 space-y-2">
+              <strong className="text-ink font-sans text-sm block">Central Universities / CBSE (9.5x)</strong>
+              <div className="font-mono text-gpblue font-bold">Percentage (%) = CGPA × 9.5</div>
+              <p className="text-gpmuted text-xs m-0">Used by CBSE and Indian central universities following the 9.5x multiplier.</p>
+            </div>
+
+            <div className="p-4 border border-gpline bg-bg/40 space-y-2">
+              <strong className="text-ink font-sans text-sm block">Generic UGC / Autonomous / Anna / KTU / JNTU</strong>
+              <div className="font-mono text-gpblue font-bold">Percentage (%) = CGPA × 10</div>
+              <p className="text-gpmuted text-xs m-0">Direct 10x multiplier across AICTE, UGC, and autonomous engineering schemes.</p>
+            </div>
+
+            <div className="p-4 border border-gpline bg-bg/40 space-y-2">
+              <strong className="text-ink font-sans text-sm block">German Inverted Scale (1.0 to 5.0)</strong>
+              <div className="font-mono text-gpblue font-bold">Percentage (%) = ((5.0 − CGPA) ÷ 4.0) × 100</div>
+              <p className="text-gpmuted text-xs m-0">Modified Bavarian formula where 1.0 is the highest grade and 4.0 is the passing threshold.</p>
+            </div>
+
+            <div className="p-4 border border-gpline bg-bg/40 space-y-2">
+              <strong className="text-ink font-sans text-sm block">International Proportional Scales (4.0, 4.33, 5.0, 7.0, 20)</strong>
+              <div className="font-mono text-gpblue font-bold">Percentage (%) = (CGPA ÷ MaxScale) × 100</div>
+              <p className="text-gpmuted text-xs m-0">Proportional scaling for US 4.0, Canada 4.33, European ECTS, French 20-Point, Australia 7.0, and Singapore 5.0.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* All 16 Built-in Regional Grading Scales */}
+        <section className="p-6 sm:p-8 border border-gpline bg-paper max-w-4xl mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <Globe2 className="w-5 h-5 text-gpblue" />
+            <h2 className="text-xl sm:text-2xl font-serif font-bold text-ink m-0">
+              4. Supported Regional & International Grading Scales ({PRESET_GRADING_SCALES.length} Presets)
+            </h2>
+          </div>
+          <p className="text-gpmuted text-sm leading-relaxed mb-6">
+            GradeForge includes {PRESET_GRADING_SCALES.length} general presets across India, North America, UK & Europe, and Australia & Asia-Pacific. You can filter scales by name or region directly in the calculator.
+          </p>
+
+          <div className="space-y-6">
+            {regions.map((region) => (
+              <div key={region}>
+                <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-gpblue border-b border-gpline pb-1.5 mb-3">
+                  {region} Systems
+                </h3>
+                <div className="grid grid-cols-1 gap-3">
+                  {PRESET_GRADING_SCALES.filter((s) => (s.region || 'Standard') === region).map((scale) => (
+                    <div key={scale.id} className="p-3.5 border border-gpline bg-bg/30">
+                      <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
+                        <strong className="text-sm font-sans text-ink">{scale.name}</strong>
+                        <span className="text-[11px] font-mono text-gpblue bg-gpwash px-2 py-0.5 border border-gpline">
+                          Max: {scale.maxScale} · % Formula: {scale.formula?.percentage || 'CGPA × 10'}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gpmuted mb-2">{scale.description}</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {scale.grades.map((g) => (
+                          <span
+                            key={g.label}
+                            className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-paper border border-gpline text-[11px] font-mono text-ink"
+                          >
+                            <strong className="text-gpblue">{g.label}</strong>={g.point}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Custom Scales & Cross-System Converter */}
+        <section className="p-6 sm:p-8 border border-gpline bg-paper max-w-4xl mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Sliders className="w-5 h-5 text-gpblue" />
+                <h2 className="text-lg sm:text-xl font-serif font-bold text-ink m-0">
+                  5. Custom Scale Builder & Editor
+                </h2>
+              </div>
+              <p className="text-xs sm:text-sm text-gpmuted leading-relaxed m-0">
+                If your institution uses a custom point mapping, click <strong>"New Scale"</strong> (or <strong>"Edit Scale"</strong> when a custom scale is active). You can set any maximum scale from 1 to 100, add or edit grade labels and points, and select your percentage conversion formula (<code className="bg-gpwash px-1">CGPA × 10</code>, <code className="bg-gpwash px-1">CGPA × 9.5</code>, <code className="bg-gpwash px-1">(CGPA − 0.75) × 10</code>, or proportional).
+              </p>
+            </div>
+
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <ArrowLeftRight className="w-5 h-5 text-gpblue" />
+                <h2 className="text-lg sm:text-xl font-serif font-bold text-ink m-0">
+                  6. Cross-System GPA Converter
+                </h2>
+              </div>
+              <p className="text-xs sm:text-sm text-gpmuted leading-relaxed m-0">
+                Preparing for graduate admissions abroad? Click <strong>"Cross-Scale Converter"</strong> in the Results Summary toolbar to convert any CGPA or GPA across Indian 10-point systems, US 4.0, Canada 4.33, German 1.0–5.0 (Modified Bavarian), UK Honours (1st / 2:1 / 2:2), French 20-Point, Australia 7.0, and Singapore 5.0 CAP.
+              </p>
             </div>
           </div>
         </section>
 
         {/* Frequently Asked Questions */}
-        <section className="p-6 sm:p-8 border border-gpline bg-paper max-w-3xl">
+        <section className="p-6 sm:p-8 border border-gpline bg-paper max-w-4xl">
           <div className="flex items-center gap-2 mb-6">
             <HelpCircle className="w-5 h-5 text-gpblue" />
             <h2 className="text-xl sm:text-2xl font-serif font-bold text-ink m-0">
@@ -136,10 +246,10 @@ export const DocsPage: React.FC = () => {
           <div className="space-y-6 divide-y divide-gpline/50">
             <div className="pt-4 first:pt-0">
               <h3 className="text-base font-bold text-ink mb-1.5 flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-gpblue shrink-0" /> Are my grades saved if I close the tab?
+                <CheckCircle2 className="w-4 h-4 text-gpblue shrink-0" /> Are my grades and onboarding preferences saved if I close the tab?
               </h3>
               <p className="text-gpmuted text-xs sm:text-sm leading-relaxed m-0 pl-5">
-                Yes! GradeForge automatically syncs every course name, credit, and grade into your browser's local storage. When you return on the same device, your work is restored instantly.
+                Yes! GradeForge requires zero login and automatically syncs your profile name, selected grading scale, custom scales, and semester subjects into your browser's <code className="bg-gpwash px-1">localStorage</code>. You can re-open the setup wizard anytime using the <strong>"Setup Guide"</strong> button.
               </p>
             </div>
 
@@ -148,7 +258,7 @@ export const DocsPage: React.FC = () => {
                 <CheckCircle2 className="w-4 h-4 text-gpblue shrink-0" /> Can I export my grades to Excel or backup to another PC?
               </h3>
               <p className="text-gpmuted text-xs sm:text-sm leading-relaxed m-0 pl-5">
-                Yes! In the calculator, click <strong>"Backup / Export"</strong> to download a JSON file (for complete backup/restore) or a CSV spreadsheet (to open in Microsoft Excel, Google Sheets, or Apple Numbers).
+                Yes! In the calculator, click <strong>"Backup / Export"</strong> to download a JSON file (for complete backup/restore including custom scales) or a CSV spreadsheet (to open in Microsoft Excel, Google Sheets, or Apple Numbers).
               </p>
             </div>
 
@@ -181,10 +291,10 @@ export const DocsPage: React.FC = () => {
 
             <div className="pt-4">
               <h3 className="text-base font-bold text-ink mb-1.5 flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-gpblue shrink-0" /> How can I add my university to the official presets?
+                <CheckCircle2 className="w-4 h-4 text-gpblue shrink-0" /> How can I add a regional grading scheme to the official presets?
               </h3>
               <p className="text-gpmuted text-xs sm:text-sm leading-relaxed m-0 pl-5">
-                You can submit an open source Pull Request on GitHub. Follow the guide in <a href="https://github.com/poorvith-mp/gradeforge/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" className="text-gpblue underline">CONTRIBUTING.md</a> and provide a link to your university's official academic regulations document.
+                You can submit an open source Pull Request on GitHub. Follow the guide in <a href="https://github.com/poorvith-mp/gradeforge/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" className="text-gpblue underline">CONTRIBUTING.md</a> and provide a link to the official academic regulations document.
               </p>
             </div>
           </div>
