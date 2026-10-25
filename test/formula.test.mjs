@@ -37,7 +37,12 @@ test('drift evaluator matches convertToPercentage on all presets for sample CGPA
     if (!scale.formula?.percentage) continue;
     for (const cgpa of sampleCGPAs) {
       // German scale is inverted (1.0 to 5.0) - only test within 1.0 - 5.0 range
-      const testCGPA = scale.id === 'german-scale' ? Math.min(5.0, Math.max(1.0, 6.0 - (cgpa / 2))) : (scale.maxScale === 4 ? (cgpa / 2.5) : (scale.maxScale === 7 ? (cgpa * 0.7) : cgpa));
+      const testCGPA =
+        scale.id === 'german-scale'
+          ? Math.min(5.0, Math.max(1.0, 6.0 - cgpa / 2))
+          : scale.maxScale !== 10
+            ? (cgpa / 10) * scale.maxScale
+            : cgpa;
       const evaluated = evaluateFormula(scale.formula.percentage, testCGPA, scale.maxScale);
       const expectedStr = convertToPercentage(testCGPA, scale.id, scale.maxScale);
       const expectedPct = parseFloat(expectedStr.replace('%', '').trim());
