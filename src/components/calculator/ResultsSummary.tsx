@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useGrade } from '../../context/GradeContext';
 import { displayGrade, convertToPercentage, getPercentageFormula } from '../../utils/calculations';
-import { Target, Download, Printer, Trash2, CheckCircle2, Share2 } from 'lucide-react';
+import { Target, Download, Printer, Trash2, CheckCircle2, Share2, ArrowLeftRight } from 'lucide-react';
 import { TargetPlannerModal } from './TargetPlannerModal';
 import { ExportImportModal } from './ExportImportModal';
 import { ReportCardModal } from './ReportCardModal';
 import { ShareModal } from './ShareModal';
+import { ConvertModal } from './ConvertModal';
 import { DiscoverySurvey } from './DiscoverySurvey';
 
 import { FormulaPanel } from './FormulaPanel';
@@ -16,6 +17,7 @@ export const ResultsSummary: React.FC = () => {
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [isReportCardOpen, setIsReportCardOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
+  const [isConverterOpen, setIsConverterOpen] = useState(false);
 
   return (
     <section className="border border-gpline bg-paper p-5 sm:p-6 mb-8 transition-colors" aria-labelledby="results-title">
@@ -82,6 +84,14 @@ export const ResultsSummary: React.FC = () => {
 
         <button
           type="button"
+          onClick={() => setIsConverterOpen(true)}
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 border border-gpline bg-paper hover:bg-gpwash text-ink text-xs font-bold transition-colors cursor-pointer"
+        >
+          <ArrowLeftRight className="w-3.5 h-3.5 text-gpblue" /> Cross-Scale Converter
+        </button>
+
+        <button
+          type="button"
           onClick={() => setIsShareOpen(true)}
           className="inline-flex items-center gap-1.5 px-3.5 py-2 border border-gpline bg-paper hover:bg-gpwash text-ink text-xs font-bold transition-colors cursor-pointer"
         >
@@ -132,6 +142,7 @@ export const ResultsSummary: React.FC = () => {
 
       {/* Modals */}
       {isPlannerOpen && <TargetPlannerModal onClose={() => setIsPlannerOpen(false)} />}
+      {isConverterOpen && <ConvertModal onClose={() => setIsConverterOpen(false)} />}
       {isExportOpen && <ExportImportModal onClose={() => setIsExportOpen(false)} />}
       {isReportCardOpen && <ReportCardModal onClose={() => setIsReportCardOpen(false)} />}
       {isShareOpen && <ShareModal onClose={() => setIsShareOpen(false)} />}
