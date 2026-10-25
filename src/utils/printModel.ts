@@ -77,7 +77,7 @@ export function buildPrintModel(state: GradeState, dateStr?: string): PrintModel
     };
   });
 
-  const percentageString = convertToPercentage(overall.cgpa, scale.id, scale.maxScale);
+  const percentageString = convertToPercentage(overall.cgpa, scale, scale.maxScale);
   const percentageFormula = getPercentageFormula(scale);
 
   return {

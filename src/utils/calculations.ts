@@ -155,7 +155,10 @@ export function calculateTargetPlan(
   };
 }
 
-export function validateScaleEntries(entries: Partial<Grade>[]): {
+export function validateScaleEntries(
+  entries: Partial<Grade>[],
+  maxScale: number = 10
+): {
   valid: boolean;
   entries: Grade[];
   errors: string[];
@@ -163,6 +166,7 @@ export function validateScaleEntries(entries: Partial<Grade>[]): {
   const errors: string[] = [];
   const labels = new Set<string>();
   const clean: Grade[] = [];
+  const cap = Number.isFinite(maxScale) && maxScale > 0 ? Math.min(100, maxScale) : 10;
 
   for (const [index, entry] of entries.entries()) {
     const label = String(entry.label ?? '').trim().toUpperCase();
@@ -174,8 +178,8 @@ export function validateScaleEntries(entries: Partial<Grade>[]): {
       errors.push(`Row ${index + 1}: use no more than 5 characters for label.`);
     } else if (labels.has(label)) {
       errors.push(`Grade label "${label}" is duplicated.`);
-    } else if (!Number.isFinite(point) || point < 0 || point > 10) {
-      errors.push(`Row ${index + 1}: grade point must be a number between 0 and 10.`);
+    } else if (!Number.isFinite(point) || point < 0 || point > cap) {
+      errors.push(`Row ${index + 1}: grade point must be a number between 0 and ${cap}.`);
     } else {
       labels.add(label);
       clean.push({ label, point });
@@ -192,8 +196,19 @@ export function validateScaleEntries(entries: Partial<Grade>[]): {
 export const displayGrade = (value: number | null | undefined): string =>
   value === null || value === undefined || !Number.isFinite(value) ? '—' : value.toFixed(2);
 
-export function convertToPercentage(cgpa: number | null, scaleId: string, maxScale: number = 10): string {
+export function convertToPercentage(
+  cgpa: number | null,
+  scaleOrId: string | GradingScale,
+  maxScale: number = 10
+): string {
   if (cgpa === null || !Number.isFinite(cgpa)) return '—';
+
+  const scaleId = typeof scaleOrId === 'string' ? scaleOrId : scaleOrId?.id || '';
+  const effectiveMax =
+    typeof scaleOrId === 'object' && scaleOrId?.maxScale ? scaleOrId.maxScale : maxScale;
+  const customPctFormula =
+    typeof scaleOrId === 'object' ? scaleOrId?.formula?.percentage : undefined;
+
   if (scaleId === 'vtu') {
     // VTU official formula: Percentage = (CGPA - 0.75) * 10
     const pct = Math.max(0, (cgpa - 0.75) * 10);
@@ -209,12 +224,24 @@ export function convertToPercentage(cgpa: number | null, scaleId: string, maxSca
     const pct = Math.max(0, Math.min(100, ((5.0 - cgpa) / 4.0) * 100));
     return `${pct.toFixed(2)}% (German Equiv)`;
   }
-  if (scaleId === 'us-4gpa' || maxScale === 4) {
+  if (scaleId === 'cbse-central-10' || customPctFormula === 'CGPA × 9.5') {
+    const pct = Math.min(100, Math.max(0, cgpa * 9.5));
+    return `${pct.toFixed(2)}%`;
+  }
+  if (customPctFormula === '(CGPA − 0.75) × 10') {
+    const pct = Math.max(0, (cgpa - 0.75) * 10);
+    return `${pct.toFixed(2)}%`;
+  }
+  if (customPctFormula === 'CGPA × 10') {
+    const pct = Math.min(100, Math.max(0, cgpa * 10));
+    return `${pct.toFixed(2)}%`;
+  }
+  if (scaleId === 'us-4gpa' || effectiveMax === 4) {
     const pct = (cgpa / 4) * 100;
     return `${pct.toFixed(2)}%`;
   }
-  if (maxScale && maxScale > 0 && maxScale !== 10) {
-    return `${((cgpa / maxScale) * 100).toFixed(2)}%`;
+  if (effectiveMax && effectiveMax > 0 && effectiveMax !== 10) {
+    return `${((cgpa / effectiveMax) * 100).toFixed(2)}%`;
   }
   // Generic 10-point standard
   return `${(cgpa * 10).toFixed(2)}%`;
@@ -257,4 +284,3 @@ export function getPercentageFormula(scale: GradingScale): string {
   }
   return 'CGPA × 10';
 }
-

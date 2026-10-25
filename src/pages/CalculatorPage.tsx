@@ -10,7 +10,7 @@ import { ExportImportModal } from '../components/calculator/ExportImportModal';
 import { isOnboardingCompleted } from '../utils/storage';
 import { initializeAttribution } from '../utils/attribution';
 import { decodePlanFromHash } from '../utils/sharePlan';
-import { Sparkles, Eye, AlertCircle } from 'lucide-react';
+import { Sparkles, Eye, AlertCircle, GraduationCap } from 'lucide-react';
 
 export const CalculatorPage: React.FC = () => {
   const {
@@ -139,19 +139,29 @@ export const CalculatorPage: React.FC = () => {
                 Calculator
               </p>
               <h1 className="text-3xl sm:text-5xl font-serif font-bold text-ink tracking-tight m-0">
-                Your academic notebook
+                {state.profile?.name ? `${state.profile.name}'s academic notebook` : 'Your academic notebook'}
               </h1>
             </div>
 
-            {state.semesters.length === 0 && (
+            <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
               <button
                 type="button"
-                onClick={loadSampleData}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border border-gpline bg-paper hover:bg-gpwash text-ink self-start sm:self-auto cursor-pointer"
+                onClick={() => setIsOnboardingOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border border-gpline bg-paper hover:bg-gpwash text-ink cursor-pointer"
               >
-                <Sparkles className="w-3.5 h-3.5 text-gpgold" /> Load Sample Data
+                <GraduationCap className="w-3.5 h-3.5 text-gpblue" /> Setup Guide
               </button>
-            )}
+
+              {state.semesters.length === 0 && (
+                <button
+                  type="button"
+                  onClick={loadSampleData}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border border-gpline bg-paper hover:bg-gpwash text-ink cursor-pointer"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-gpgold" /> Load Sample Data
+                </button>
+              )}
+            </div>
           </div>
           <p className="text-gpmuted text-sm sm:text-base mt-2 max-w-2xl">
             Verify the selected scale against your institution’s current official grading scheme. Results update live with each keystroke.

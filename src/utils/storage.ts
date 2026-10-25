@@ -20,19 +20,39 @@ export function validateState(value: unknown): GradeState {
   const raw = value as Partial<GradeState>;
 
   const customScales: GradingScale[] = Array.isArray(raw.customScales)
-    ? raw.customScales.slice(0, 15).map((scale) => ({
-        id: bounded(scale.id, 80) || `custom-${Date.now()}`,
-        name: bounded(scale.name, 60) || 'Custom Scale',
-        maxScale: Number(scale.maxScale) || 10,
-        isCustom: true,
-        description: bounded(scale.description, 150),
-        grades: Array.isArray(scale.grades)
-          ? scale.grades.slice(0, 30).map((g) => ({
-              label: bounded(g.label, 5).toUpperCase(),
-              point: Math.min(10, Math.max(0, Number(g.point) || 0)),
-            }))
-          : [],
-      })).filter((scale) => scale.id && scale.name && scale.grades.length > 0)
+    ? raw.customScales.slice(0, 15).map((scale) => {
+        const maxScale = Math.min(100, Math.max(1, Number(scale.maxScale) || 10));
+        const formula =
+          scale.formula && typeof scale.formula === 'object'
+            ? {
+                sgpa:
+                  bounded(scale.formula.sgpa, 120) ||
+                  'SGPA = Σ(credit × grade point) ÷ Σ(credit)',
+                cgpa:
+                  bounded(scale.formula.cgpa, 120) ||
+                  'CGPA = Σ(semester SGPA × semester credits) ÷ Σ(total credits)',
+                ...(scale.formula.percentage
+                  ? { percentage: bounded(scale.formula.percentage, 80) }
+                  : {}),
+                ...(scale.formula.note ? { note: bounded(scale.formula.note, 150) } : {}),
+              }
+            : undefined;
+
+        return {
+          id: bounded(scale.id, 80) || `custom-${Date.now()}`,
+          name: bounded(scale.name, 60) || 'Custom Scale',
+          maxScale,
+          isCustom: true,
+          description: bounded(scale.description, 150),
+          ...(formula ? { formula } : {}),
+          grades: Array.isArray(scale.grades)
+            ? scale.grades.slice(0, 30).map((g) => ({
+                label: bounded(g.label, 5).toUpperCase(),
+                point: Math.min(maxScale, Math.max(0, Number(g.point) || 0)),
+              }))
+            : [],
+        };
+      }).filter((scale) => scale.id && scale.name && scale.grades.length > 0)
     : [];
 
   const semesters: Semester[] = Array.isArray(raw.semesters)

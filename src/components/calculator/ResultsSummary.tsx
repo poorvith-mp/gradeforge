@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useGrade } from '../../context/GradeContext';
-import { displayGrade, convertToPercentage } from '../../utils/calculations';
+import { displayGrade, convertToPercentage, getPercentageFormula } from '../../utils/calculations';
 import { Target, Download, Printer, Trash2, CheckCircle2, Share2 } from 'lucide-react';
 import { TargetPlannerModal } from './TargetPlannerModal';
 import { ExportImportModal } from './ExportImportModal';
@@ -59,10 +59,10 @@ export const ResultsSummary: React.FC = () => {
             Equivalent Percentage
           </span>
           <output className="font-serif font-bold text-2xl sm:text-3xl text-ink mt-1">
-            {convertToPercentage(overall.cgpa, activeScale.id)}
+            {convertToPercentage(overall.cgpa, activeScale, activeScale.maxScale)}
           </output>
           <span className="text-[11px] font-mono text-gpmuted mt-1">
-            {activeScale.id === 'vtu' ? 'Formula: (CGPA - 0.75) × 10' : 'Approximate conversion'}
+            Formula: {getPercentageFormula(activeScale)}
           </span>
         </div>
       </div>

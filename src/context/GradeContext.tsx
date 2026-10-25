@@ -12,6 +12,7 @@ interface GradeContextType {
   setSelectedScaleId: (id: string) => void;
   saveCustomScale: (scale: GradingScale) => void;
   deleteCustomScale: (scaleId: string) => void;
+  updateProfileName: (name: string) => void;
   addSemester: (name?: string) => void;
   removeSemester: (semId: string) => void;
   updateSemesterName: (semId: string, name: string) => void;
@@ -59,6 +60,21 @@ export const GradeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const setSelectedScaleId = (id: string) => {
     setState((prev) => ({ ...prev, selectedScaleId: id }));
+  };
+
+  const updateProfileName = (name: string) => {
+    setState((prev) => {
+      const trimmed = name.trim();
+      if (!trimmed) {
+        const next = { ...prev };
+        delete next.profile;
+        return next;
+      }
+      return {
+        ...prev,
+        profile: { name: trimmed.slice(0, 100) },
+      };
+    });
   };
 
   const saveCustomScale = (newScale: GradingScale) => {
@@ -214,6 +230,7 @@ export const GradeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setSelectedScaleId,
         saveCustomScale,
         deleteCustomScale,
+        updateProfileName,
         addSemester,
         removeSemester,
         updateSemesterName,

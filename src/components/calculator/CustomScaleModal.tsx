@@ -9,10 +9,23 @@ interface CustomScaleModalProps {
   initialScale?: GradingScale;
 }
 
+type FormulaPresetKey = 'CGPA × 10' | 'CGPA × 9.5' | '(CGPA − 0.75) × 10' | 'proportional';
+
+function detectInitialFormulaKey(scale?: GradingScale): FormulaPresetKey {
+  const pct = scale?.formula?.percentage;
+  if (pct === 'CGPA × 9.5') return 'CGPA × 9.5';
+  if (pct === '(CGPA − 0.75) × 10') return '(CGPA − 0.75) × 10';
+  if (pct === 'CGPA × 10') return 'CGPA × 10';
+  if (pct && pct.includes('÷')) return 'proportional';
+  if (scale?.maxScale && scale.maxScale !== 10) return 'proportional';
+  return 'CGPA × 10';
+}
+
 export const CustomScaleModal: React.FC<CustomScaleModalProps> = ({ onClose, initialScale }) => {
   const { saveCustomScale } = useGrade();
   const [name, setName] = useState(initialScale?.name || '');
   const [maxScale, setMaxScale] = useState(initialScale?.maxScale || 10);
+  const [formulaKey, setFormulaKey] = useState<FormulaPresetKey>(() => detectInitialFormulaKey(initialScale));
   const [grades, setGrades] = useState<Partial<Grade>[]>(
     initialScale?.grades || [
       { label: 'A+', point: 10 },
@@ -42,25 +55,38 @@ export const CustomScaleModal: React.FC<CustomScaleModalProps> = ({ onClose, ini
 
   const handleSave = () => {
     const scaleName = name.trim() || 'Custom Grading Scale';
-    const validation = validateScaleEntries(grades);
+    const numericMax = Math.min(100, Math.max(1, Number(maxScale) || 10));
+    const validation = validateScaleEntries(grades, numericMax);
 
     if (!validation.valid) {
       setErrors(validation.errors);
       return;
     }
 
+    const percentageFormula =
+      formulaKey === 'proportional'
+        ? `(CGPA ÷ ${numericMax}) × 100`
+        : formulaKey;
+
     const newScale: GradingScale = {
       id: initialScale?.id || `custom-${Date.now()}`,
       name: scaleName,
-      maxScale: Number(maxScale) || 10,
+      maxScale: numericMax,
       isCustom: true,
-      description: `Custom scale with ${validation.entries.length} grade definitions.`,
+      description: `Custom ${numericMax}-point scale with ${validation.entries.length} grade definitions.`,
+      formula: {
+        sgpa: 'SGPA = Σ(credit × grade point) ÷ Σ(credit)',
+        cgpa: 'CGPA = Σ(semester SGPA × semester credits) ÷ Σ(total credits)',
+        percentage: percentageFormula,
+      },
       grades: validation.entries,
     };
 
     saveCustomScale(newScale);
     onClose();
   };
+
+  const effectiveMax = Math.min(100, Math.max(1, Number(maxScale) || 10));
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
@@ -111,18 +137,47 @@ export const CustomScaleModal: React.FC<CustomScaleModalProps> = ({ onClose, ini
             />
           </div>
 
-          <div>
-            <label className="block text-xs font-mono font-semibold text-ink uppercase tracking-wider mb-1.5">
-              Maximum Scale (e.g. 10 or 4)
-            </label>
-            <input
-              type="number"
-              value={maxScale}
-              onChange={(e) => setMaxScale(Number(e.target.value))}
-              min={1}
-              max={100}
-              className="w-full px-3 py-2 border border-gpline bg-bg text-ink rounded-none text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-gpgold"
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-mono font-semibold text-ink uppercase tracking-wider mb-1.5">
+                Maximum Scale (1 to 100)
+              </label>
+              <input
+                type="number"
+                value={maxScale}
+                onChange={(e) => {
+                  const val = Number(e.target.value);
+                  setMaxScale(val);
+                  if (val && val !== 10 && formulaKey === 'CGPA × 10') {
+                    setFormulaKey('proportional');
+                  }
+                }}
+                min={1}
+                max={100}
+                step="0.01"
+                className="w-full px-3 py-2 border border-gpline bg-bg text-ink rounded-none text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-gpgold"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="custom-scale-formula"
+                className="block text-xs font-mono font-semibold text-ink uppercase tracking-wider mb-1.5"
+              >
+                Percentage Formula
+              </label>
+              <select
+                id="custom-scale-formula"
+                value={formulaKey}
+                onChange={(e) => setFormulaKey(e.target.value as FormulaPresetKey)}
+                className="w-full px-3 py-2 border border-gpline bg-bg text-ink rounded-none text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-gpgold"
+              >
+                <option value="CGPA × 10">CGPA × 10 (Standard 10-pt)</option>
+                <option value="CGPA × 9.5">CGPA × 9.5 (Central / 9.5x)</option>
+                <option value="(CGPA − 0.75) × 10">(CGPA − 0.75) × 10 (VTU style)</option>
+                <option value="proportional">(CGPA ÷ {effectiveMax}) × 100 (Proportional)</option>
+              </select>
+            </div>
           </div>
 
           <div>
@@ -130,7 +185,7 @@ export const CustomScaleModal: React.FC<CustomScaleModalProps> = ({ onClose, ini
               <label className="text-xs font-mono font-semibold text-ink uppercase tracking-wider">
                 Grade Definitions (Label & Points)
               </label>
-              <span className="text-[11px] text-gpmuted font-mono">0 to 10 points</span>
+              <span className="text-[11px] text-gpmuted font-mono">0 to {effectiveMax} points</span>
             </div>
 
             <div className="space-y-2">
@@ -148,7 +203,7 @@ export const CustomScaleModal: React.FC<CustomScaleModalProps> = ({ onClose, ini
                     type="number"
                     step="0.1"
                     min="0"
-                    max="10"
+                    max={effectiveMax}
                     value={g.point ?? ''}
                     onChange={(e) => handleUpdateGrade(idx, 'point', e.target.value)}
                     placeholder="Points"

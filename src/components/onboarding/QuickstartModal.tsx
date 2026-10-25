@@ -3,6 +3,7 @@ import { useGrade } from '../../context/GradeContext';
 import { PRESET_GRADING_SCALES } from '../../constants/presets';
 import { setOnboardingCompleted } from '../../utils/storage';
 import { Sparkles, Plus, Upload, Check, GraduationCap, X } from 'lucide-react';
+import { CustomScaleModal } from '../calculator/CustomScaleModal';
 
 interface QuickstartModalProps {
   isOpen: boolean;
@@ -15,12 +16,19 @@ export const QuickstartModal: React.FC<QuickstartModalProps> = ({
   onClose,
   onOpenImport,
 }) => {
-  const { state, setSelectedScaleId, loadSampleData, addSemester } = useGrade();
+  const { state, setSelectedScaleId, updateProfileName, loadSampleData, addSemester } = useGrade();
   const [step, setStep] = useState<number>(1);
+  const [studentName, setStudentName] = useState<string>(state.profile?.name || '');
+  const [isCustomModalOpen, setIsCustomModalOpen] = useState<boolean>(false);
 
   if (!isOpen) return null;
 
+  const commitName = () => {
+    updateProfileName(studentName);
+  };
+
   const handleFinish = (action: 'sample' | 'blank' | 'import') => {
+    commitName();
     setOnboardingCompleted(true);
     if (action === 'sample') {
       loadSampleData();
@@ -36,6 +44,8 @@ export const QuickstartModal: React.FC<QuickstartModalProps> = ({
     onClose();
   };
 
+  const allScales = [...state.customScales, ...PRESET_GRADING_SCALES];
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm">
       <div
@@ -47,6 +57,7 @@ export const QuickstartModal: React.FC<QuickstartModalProps> = ({
         <button
           type="button"
           onClick={() => {
+            commitName();
             setOnboardingCompleted(true);
             onClose();
           }}
@@ -72,9 +83,9 @@ export const QuickstartModal: React.FC<QuickstartModalProps> = ({
         </div>
 
         {/* Step Indicator */}
-        <div className="flex items-center gap-2 mb-6 border-b border-gpline pb-3 text-xs font-mono">
+        <div className="flex items-center gap-2 mb-5 border-b border-gpline pb-3 text-xs font-mono">
           <span className={`px-2 py-0.5 ${step === 1 ? 'bg-gpblue text-white font-bold' : 'text-gpmuted'}`}>
-            1. Choose Scheme
+            1. Profile & Scheme
           </span>
           <span className="text-gpmuted">→</span>
           <span className={`px-2 py-0.5 ${step === 2 ? 'bg-gpblue text-white font-bold' : 'text-gpmuted'}`}>
@@ -84,12 +95,39 @@ export const QuickstartModal: React.FC<QuickstartModalProps> = ({
 
         {step === 1 && (
           <div className="space-y-4">
-            <p className="text-xs sm:text-sm text-gpmuted m-0">
-              Select your university grading scheme. GradeForge automatically weights credit points and calculates semester SGPA & overall CGPA.
-            </p>
+            <div>
+              <label
+                htmlFor="onboarding-student-name"
+                className="block text-xs font-mono font-semibold text-ink uppercase tracking-wider mb-1"
+              >
+                Your Name (Optional — saved locally in browser)
+              </label>
+              <input
+                id="onboarding-student-name"
+                type="text"
+                value={studentName}
+                onChange={(e) => setStudentName(e.target.value)}
+                placeholder="e.g. Poorvith M P"
+                maxLength={100}
+                className="w-full px-3 py-2 border border-gpline bg-bg text-ink rounded-none text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-gpgold"
+              />
+            </div>
 
-            <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
-              {PRESET_GRADING_SCALES.map((scale) => {
+            <div className="flex items-center justify-between">
+              <p className="text-xs sm:text-sm text-gpmuted m-0">
+                Select your grading scheme or create a custom scale:
+              </p>
+              <button
+                type="button"
+                onClick={() => setIsCustomModalOpen(true)}
+                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold border border-gpline bg-paper hover:bg-gpwash text-gpblue shrink-0 cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" /> Custom Scale
+              </button>
+            </div>
+
+            <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+              {allScales.map((scale) => {
                 const isSelected = state.selectedScaleId === scale.id;
                 return (
                   <button
@@ -103,7 +141,9 @@ export const QuickstartModal: React.FC<QuickstartModalProps> = ({
                     }`}
                   >
                     <div>
-                      <strong className="block text-sm font-sans">{scale.name}</strong>
+                      <strong className="block text-sm font-sans">
+                        {scale.name} {scale.isCustom ? '(Custom)' : ''}
+                      </strong>
                       <span className="text-xs font-mono text-gpmuted">{scale.description}</span>
                     </div>
                     {isSelected && <Check className="w-4 h-4 text-gpblue shrink-0 ml-2" />}
@@ -115,7 +155,10 @@ export const QuickstartModal: React.FC<QuickstartModalProps> = ({
             <div className="pt-3 border-t border-gpline flex justify-end">
               <button
                 type="button"
-                onClick={() => setStep(2)}
+                onClick={() => {
+                  commitName();
+                  setStep(2);
+                }}
                 className="px-5 py-2 text-xs font-bold border border-gpblue bg-gpblue text-white hover:opacity-90 cursor-pointer"
               >
                 Next: Select Mode →
@@ -127,7 +170,7 @@ export const QuickstartModal: React.FC<QuickstartModalProps> = ({
         {step === 2 && (
           <div className="space-y-4">
             <p className="text-xs sm:text-sm text-gpmuted m-0">
-              How would you like to start your notebook session?
+              How would you like to start your notebook session? All entries save automatically to your browser with zero login required.
             </p>
 
             <div className="grid grid-cols-1 gap-3">
@@ -197,6 +240,10 @@ export const QuickstartModal: React.FC<QuickstartModalProps> = ({
               </button>
             </div>
           </div>
+        )}
+
+        {isCustomModalOpen && (
+          <CustomScaleModal onClose={() => setIsCustomModalOpen(false)} />
         )}
       </div>
     </div>
