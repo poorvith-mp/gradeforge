@@ -40,6 +40,37 @@ test('supports optional profile.name and trims input', () => {
   assert.deepEqual(validated.profile, { name: 'Ada Lovelace' });
 });
 
+test('preserves custom scale maxScale > 10 and percentage formula across reloads', () => {
+  const stateWithCustom = {
+    selectedScaleId: 'custom-french-20',
+    customScales: [
+      {
+        id: 'custom-french-20',
+        name: 'Custom 20-Point Scale',
+        maxScale: 20,
+        isCustom: true,
+        description: 'Custom 20-point scale',
+        formula: {
+          sgpa: 'SGPA = Σ(credit × grade point) ÷ Σ(credit)',
+          cgpa: 'CGPA = Σ(semester SGPA × semester credits) ÷ Σ(total credits)',
+          percentage: '(CGPA ÷ 20) × 100',
+        },
+        grades: [
+          { label: 'TB', point: 18 },
+          { label: 'B', point: 15 },
+        ],
+      },
+    ],
+    semesters: [],
+  };
+
+  const validated = validateState(stateWithCustom);
+  assert.equal(validated.customScales.length, 1);
+  assert.equal(validated.customScales[0].maxScale, 20);
+  assert.equal(validated.customScales[0].grades[0].point, 18);
+  assert.equal(validated.customScales[0].formula?.percentage, '(CGPA ÷ 20) × 100');
+});
+
 test('drops unknown keys for security and hygienic storage', () => {
   const dirtyState = {
     selectedScaleId: 'vtu',

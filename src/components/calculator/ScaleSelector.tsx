@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useGrade } from '../../context/GradeContext';
 import { PRESET_GRADING_SCALES } from '../../constants/presets';
-import { Plus, Trash2, HelpCircle } from 'lucide-react';
+import { GradingScale } from '../../types/grade';
+import { Plus, Trash2, HelpCircle, Pencil } from 'lucide-react';
 import { CustomScaleModal } from './CustomScaleModal';
 
 export const ScaleSelector: React.FC = () => {
   const { state, activeScale, setSelectedScaleId, deleteCustomScale } = useGrade();
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
+  const [editingScale, setEditingScale] = useState<GradingScale | undefined>(undefined);
 
   return (
     <div className="p-5 border border-gpline bg-paper mb-6 transition-colors">
@@ -23,6 +25,7 @@ export const ScaleSelector: React.FC = () => {
             value={state.selectedScaleId}
             onChange={(e) => {
               if (e.target.value === '__add_new__') {
+                setEditingScale(undefined);
                 setIsCustomModalOpen(true);
               } else {
                 setSelectedScaleId(e.target.value);
@@ -54,10 +57,13 @@ export const ScaleSelector: React.FC = () => {
           </select>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            onClick={() => setIsCustomModalOpen(true)}
+            onClick={() => {
+              setEditingScale(undefined);
+              setIsCustomModalOpen(true);
+            }}
             className="inline-flex items-center gap-1 px-3 py-2 text-xs font-bold border border-gpline bg-paper hover:bg-gpwash text-ink transition-colors cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5 text-gpblue" />
@@ -65,19 +71,34 @@ export const ScaleSelector: React.FC = () => {
           </button>
 
           {activeScale.isCustom && (
-            <button
-              type="button"
-              onClick={() => {
-                if (window.confirm(`Delete custom scale "${activeScale.name}"?`)) {
-                  deleteCustomScale(activeScale.id);
-                }
-              }}
-              title="Delete this custom scale"
-              className="inline-flex items-center gap-1 px-3 py-2 text-xs font-bold border border-gpline bg-paper hover:bg-red-50 text-gpred transition-colors cursor-pointer"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-              Delete Scale
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingScale(activeScale);
+                  setIsCustomModalOpen(true);
+                }}
+                title="Edit this custom scale"
+                className="inline-flex items-center gap-1 px-3 py-2 text-xs font-bold border border-gpline bg-paper hover:bg-gpwash text-ink transition-colors cursor-pointer"
+              >
+                <Pencil className="w-3.5 h-3.5 text-gpblue" />
+                Edit Scale
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm(`Delete custom scale "${activeScale.name}"?`)) {
+                    deleteCustomScale(activeScale.id);
+                  }
+                }}
+                title="Delete this custom scale"
+                className="inline-flex items-center gap-1 px-3 py-2 text-xs font-bold border border-gpline bg-paper hover:bg-red-50 text-gpred transition-colors cursor-pointer"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Delete Scale
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -125,7 +146,13 @@ export const ScaleSelector: React.FC = () => {
       </div>
 
       {isCustomModalOpen && (
-        <CustomScaleModal onClose={() => setIsCustomModalOpen(false)} />
+        <CustomScaleModal
+          initialScale={editingScale}
+          onClose={() => {
+            setIsCustomModalOpen(false);
+            setEditingScale(undefined);
+          }}
+        />
       )}
     </div>
   );
